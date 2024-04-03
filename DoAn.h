@@ -2,12 +2,15 @@
 //#include "unicode/stringpiece.h"
 //#include "utf8.h"
 //#include "unicode/uchar.h"
+#ifndef _DOAN_H_
+#define _DOAN_H
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
 #include<cstdlib>
+#include<sys/stat.h>
 using namespace std;
 struct SinhVien{
     char MSSV[11];
@@ -20,5 +23,9 @@ struct SinhVien{
     char ThongTinKhac[10][100];
 };
 int soDong();
+void TaoFileHTML(SinhVien sv);
+int GetLine(char *t,int seek,int& flag);
+int writeHTML(SinhVien sv,char *t, int seek);
 void xuatSinhVien(SinhVien A);
 void GetData(SinhVien* &sinh_vien,int& no);
+#endif
