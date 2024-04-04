@@ -11,6 +11,7 @@
 #include<math.h>
 #include<cstdlib>
 #include<sys/stat.h>
+#include<cstdio>
 using namespace std;
 struct SinhVien{
     char MSSV[11];
