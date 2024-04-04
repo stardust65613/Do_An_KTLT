@@ -25,8 +25,8 @@ struct SinhVien{
 };
 int soDong();
 void TaoFileHTML(SinhVien sv);
-int GetLine(char *t,int seek,int& flag);
-int writeHTML(SinhVien sv,char *t, int seek);
+int GetLine(char* &t,long &seek);
+void writeHTML(SinhVien sv,char *t,long &seek,int flag);
 void xuatSinhVien(SinhVien A);
 void GetData(SinhVien* &sinh_vien,int& no);
 #endif

@@ -71,7 +71,7 @@ void LuuSinhVien(SinhVien &sv, char* data){
 }
 int soDong(){
     int num = 0;
-    char *a = new char[200];
+    char *a = new char[500];
     FILE* p = NULL;
     p = fopen("SinhVien.csv","r");
     if(p == NULL){
@@ -124,33 +124,37 @@ void xuatSinhVien(SinhVien sv){
     }
     fclose(p);
 }
-int GetLine(char *t,long seek){
+int GetLine(char* &t,long &seek){
     FILE* p = NULL;
-    int flag = 0;
+    int flag = -1;
     t = new char[500];
-    char str[100];
     p = fopen("template.html","r");
-    fseek(p,seek + 1,SEEK_SET);
+    cout << "get";
+    fseek(p,seek,SEEK_SET);
     fgets(t,200,p);
     seek = ftell(p);
-    if(feof(p)){
-        flag = -1;
+    if(!feof(p)){
+        flag = 1;
     }
     fclose(p);
     return flag;
 }
-void writeHTML(SinhVien sv,char *t, long &seek){
+void writeHTML(SinhVien sv,char *t, long &seek,int flag){
     FILE* p = NULL;
-    p = fopen("D:\\Test2\\23120027.html","w");
+    p = fopen("D:\\Test2\\23120027.html","a");
     if(p == NULL){
         cout << "\nerror";
     }
     else{
         cout << "\nTao file thanh cong.";
     }
-    fseek(p,seek + 1,SEEK_SET);
-    fputs(t,p);
-    fputc('\n',p);
+    fseek(p,seek,SEEK_SET);
+    for(int i = 0; i < strlen(t) - 1; i++){
+        fputc(t[i],p);
+    }
+    if(flag > 0){
+            fputc('\n',p);
+        }
     seek = ftell(p);
     fclose(p);
     delete [] t;
@@ -166,17 +170,20 @@ void TaoFileHTML(SinhVien sv){
     long seek2 = 0;
     FILE *p = NULL;
     p = fopen("template.html","r");
+    fclose(p);
     if(p == NULL){
         cout << "\nKhong mo duoc file HTML";
     }
     else{
         while(temp > 0){
             cout << temp << endl;
-            temp = GetLine(buffer,seek,temp);
-            writeHTML(sv,buffer,seek2);
+            temp = GetLine(buffer,seek);
+            if(temp < 0){
+                break;
+            }
+            writeHTML(sv,buffer,seek2,temp);
         }
     }
-    delete [] buffer;
 }
 //void TaoFileHTML(char* dir_name){
 
