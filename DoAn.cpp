@@ -110,29 +110,6 @@ void GetData(SinhVien* &sinh_vien,int& no){
 }
 
 
-
-
-//test xóa
-void xuatSinhVien(SinhVien sv){
-    FILE* p;
-    p = fopen("output.txt","a");
-    if(p == NULL){
-        cout << "\nKhong mo duoc tep.";
-    }
-    else{
-        fputs(sv.Fullname,p);
-        fputs(sv.MSSV,p);
-        fputs(sv.Faculty,p);
-        fputs(sv.img,p);
-        fputs(sv.DoB,p);
-        fputs(sv.MoTa,p);
-    }
-    fclose(p);
-}
-
-
-
-//
 int GetLine(char* &t,long &seek){
     FILE* p = NULL;
     int flag = -1;
@@ -147,7 +124,7 @@ int GetLine(char* &t,long &seek){
     fclose(p);
     return flag;
 }
-void writeHTML(SinhVien sv,char *t, long &seek,int flag){
+void writeHTML(SinhVien sv,char* &t, long &seek,int flag){
     FILE* p = NULL;
     p = fopen("D:\\Test2\\23120027.html","a");
     if(p == NULL){
@@ -158,6 +135,7 @@ void writeHTML(SinhVien sv,char *t, long &seek,int flag){
     seek = ftell(p);
     fclose(p);
     delete [] t;
+    t = NULL;
 }
 
 //void XuLyTT(SinhVien sv,char * data){
@@ -166,11 +144,11 @@ void writeHTML(SinhVien sv,char *t, long &seek,int flag){
 //Them thong tin(đang làm)
 bool IsBlockInLine(char *a, char* block_name){
     char b[20] = "\"";
-    strcat(a,block_name);
-    strcat(a,"\"");
+    strcat(b,block_name);
+    strcat(b,"\"");
     char c[20] = "\"\\";
-    strcat(a,block_name);
-    strcat(a,"\"");
+    strcat(c,block_name);
+    strcat(c,"\"");
     if(strstr(a,b) != NULL && strstr(a,c)!= NULL){
         return true;
     }
@@ -178,57 +156,94 @@ bool IsBlockInLine(char *a, char* block_name){
         return false;
     }
 }
-void TimViTriThemThongTin(char *a,char *tag_name,char* &p,char* &p2){
-    char *p;
-    if(strcmp(tag_name,"<img") == 0){
-        p = strstr(a,"src=\"") + 4;
+void TimViTriThemThongTin(char* a,char *name,char* &p,char* &p2){
+    if(strcmp(name,"<img") == 0){
+        p = strstr(a,"src=\"") + strlen("src=\"") - 1;
         p2 = strchr(p,'\"');
     }
+    else if(strcmp(name,"<title>") == 0){
+        p = strstr(a,"<title>") + strlen("<title>") - 1;
+        p2 = strstr(a,"<\\title>"); 
+    }
+    else if(strcmp(name,"<") != 0){
+        p = strstr(a,name) + strlen(name) + 1;
+        p2 = NULL;
+    }
 }
-
-void ChenThongTin(char *thong_tin_them,char *a,char *vi_tri, bool flag){
+int DoDai(char *a){
+    char b = '\0';
+    int cnt = 0;
+    while(a[cnt] != b){
+        cnt++;
+    }
+    return cnt;
+}
+void ChenThongTin(char *thong_tin_them,char *a,char *vi_tri){
     int b = vi_tri - a;
-    int n;
-    cout << b;
-    if(flag == true){
-        for(int i = strlen(a) - 1; i > b + strlen(thong_tin_them) ; i--){
-            a[i] = a[i - strlen(thong_tin_them)];  
-        }
-        for(int i = 0; i < strlen(thong_tin_them); i++){
-            a[b + i + 1] = thong_tin_them[i];  
+    char *temp = new char[1000];
+    
+    for(int i = 0; i < strlen(thong_tin_them) + strlen(a); i++){
+        if(i <= b){
+            temp[i] = a[i];
+        } 
+        else{
+            temp[i +  strlen(thong_tin_them)] = a[i];
         }
     }
-    else{
-        for(int i = 0; i < strlen(thong_tin_them); i++){
-            a[strlen(a) + i] = thong_tin_them[i]; 
-        }
-        a[strlen(a) + strlen(thong_tin_them)] = '\n';
-    }  
-    cout << a;
+    temp[strlen(thong_tin_them) + strlen(a)]= '\0';
+    for(int i = 0; i < strlen(thong_tin_them); i++){
+        temp[b + i + 1] = thong_tin_them[i];  
+    }
+    
+    strcpy(a,temp);
+    delete [] temp;
 }
 void KiemTraVaThemThongTin(SinhVien sv, char *a){
-    bool flag;
     char *vi_tri;
     char *vi_tri2;
     char *tt = new char[1000];
-    char *tag_name = new char[20];
+    char *name = new char[20];
     if(strstr(a,"title") != NULL){
-        return;
-        flag = IsBlockInLine(a,"title");
-        tt = "HCMUS - ";
-        TimViTriThemThongTin(a,"title",vi_tri,vi_tri2);
+        strcpy(name,"title");
+        strcpy(name,"<title>");
+        strcpy(tt,"HCMUS - ");
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
         strcat(tt,sv.Fullname);
-        ChenThongTin(tt,a,vi_tri,flag);
+        ChenThongTin(tt,a,vi_tri);
     }
     else if(strstr(a,"<img") != NULL){
-        strcpy(tag_name,"<img");
+        strcpy(name,"<img");
         strcpy(tt,sv.img);
-        TimViTriThemThongTin(a,tag_name,vi_tri,vi_tri2);
-
-        ChenThongTin(tt,a,vi_tri,true);
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
+        ChenThongTin(tt,a,vi_tri);
+    }
+    else if(strstr(a,"Personal_FullName") != NULL){
+        strcpy(name,"Personal_FullName");
+        strcpy(tt,sv.Fullname);
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
+        ChenThongTin(tt,a,vi_tri);
+    }
+    else if(strstr(a,"Personal_Department") != NULL){
+        strcpy(name,"Personal_Department");
+        strcpy(tt,sv.Faculty);
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
+        ChenThongTin(tt,a,vi_tri);
+    }
+    else if(strstr(a,"Personal_Phone") != NULL){
+        strcpy(name,"Personal_Phone");
+        strcpy(tt,"Email :");
+        strcat(tt,getPhone(sv.Fullname));
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
+        ChenThongTin(tt,a,vi_tri);
+    }
+    else if(strstr(a,"Description") != NULL){
+        strcpy(name,"Description");
+        strcpy(tt,sv.MoTa);
+        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
+        ChenThongTin(tt,a,vi_tri);
     }
     delete [] tt;
-    delete [] tag_name;
+    delete [] name;
 }
 //Tao file (tam xong)
 void TaoFileHTML(SinhVien sv){
@@ -236,22 +251,13 @@ void TaoFileHTML(SinhVien sv){
     int temp = 1;
     long seek = 0;
     long seek2 = 0;
-    FILE *p = NULL;
-    p = fopen("template.html","r");
-    fclose(p);
-    if(p == NULL){
-        cout << "\nKhong mo duoc file HTML";
-    }
-    else{
-        while(temp > 0){
-            cout << temp << endl;
-            temp = GetLine(buffer,seek);
-            if(temp < 0){
-                break;
-            }
-            KiemTraVaThemThongTin(sv,buffer);
-            writeHTML(sv,buffer,seek2,temp);
+    while(temp > 0){
+        temp = GetLine(buffer,seek);
+        if(temp < 0){
+            break;
         }
+        KiemTraVaThemThongTin(sv,buffer);
+        writeHTML(sv,buffer,seek2,temp);    
     }
 }
 //void TaoFileHTML(char* dir_name){
