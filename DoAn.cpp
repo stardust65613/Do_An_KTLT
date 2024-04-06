@@ -67,7 +67,19 @@ void LuuSinhVien(SinhVien &sv, char* data){
             CatChuoi(data,sv.MoTa,index,i - 2);
             index = i + 2;
         }
+        if(i == strlen(data) -  1){
+            cnt = 8;
+        }
     }
+    if(index < strlen(data) && cnt != 7){
+        CatChuoi(data,sv.ThongTinKhac,index - 1,strlen(data) - 1);
+        cout << sv.ThongTinKhac;
+    }
+}
+void printsv(SinhVien a){
+    FILE *p = fopen("output.txt","w");
+    fputs(a.ThongTinKhac,p);
+    fclose(p);
 }
 int soDong(){
     int num = 0;
@@ -137,10 +149,6 @@ void writeHTML(SinhVien sv,char* &t, long &seek,int flag){
     delete [] t;
     t = NULL;
 }
-
-//void XuLyTT(SinhVien sv,char * data){
-
-//}
 //Them thong tin(đang làm)
 bool IsBlockInLine(char *a, char* block_name){
     char b[20] = "\"";
@@ -165,19 +173,18 @@ void TimViTriThemThongTin(char* a,char *name,char* &p,char* &p2){
         p = strstr(a,"<title>") + strlen("<title>") - 1;
         p2 = strstr(a,"<\\title>"); 
     }
-    else if(strcmp(name,"<") != 0){
-        p = strstr(a,name) + strlen(name) + 1;
+    else if(strcmp(name,"\"") == 0){
+        p = strstr(a,name) + strlen(name);
         p2 = NULL;
     }
-}
-int DoDai(char *a){
-    char b = '\0';
-    int cnt = 0;
-    while(a[cnt] != b){
-        cnt++;
+    else if(strcmp(name,"Họ và tên") == 0 || strcmp(name,"MSSV") == 0 || strcmp(name,"Sinh viên khoa") || strcmp(name,"Ngày sinh") || strcmp(name,"Email"))
+    {
+        p = strstr(a,name) + strlen(name);
+        p2 = NULL;
     }
-    return cnt;
+    
 }
+
 void ChenThongTin(char *thong_tin_them,char *a,char *vi_tri){
     int b = vi_tri - a;
     char *temp = new char[1000];
@@ -198,52 +205,124 @@ void ChenThongTin(char *thong_tin_them,char *a,char *vi_tri){
     strcpy(a,temp);
     delete [] temp;
 }
+void Phone(SinhVien sv,char *a){
+    int cnt = 0;
+    for(int i = 1;i < strlen(sv.Fullname); i++){
+        if(sv.Fullname[i-1] == ' '){
+            a[cnt] = sv.Fullname[i] + 32;
+            cnt++;
+            
+        }
+        else if(i == 1){
+            a[cnt] = sv.Fullname[0] + 32;
+            cnt++;
+        }
+    }
+    strcat(a,"@gmail.com");
+}
 void KiemTraVaThemThongTin(SinhVien sv, char *a){
     char *vi_tri;
     char *vi_tri2;
+    bool flag = true;
+    bool flag2 = false;
     char *tt = new char[1000];
-    char *name = new char[20];
+    char *name = new char[50];
+    char *phone = new char[30];
+    Phone(sv,phone);
     if(strstr(a,"title") != NULL){
         strcpy(name,"title");
         strcpy(name,"<title>");
         strcpy(tt,"HCMUS - ");
-        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
         strcat(tt,sv.Fullname);
-        ChenThongTin(tt,a,vi_tri);
     }
     else if(strstr(a,"<img") != NULL){
         strcpy(name,"<img");
         strcpy(tt,sv.img);
-        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
-        ChenThongTin(tt,a,vi_tri);
     }
-    else if(strstr(a,"Personal_FullName") != NULL){
-        strcpy(name,"Personal_FullName");
+    else if(strstr(a,"Email:") != NULL){
+        strcpy(name,"Email:");
+        strcpy(tt,phone);
+    }
+    else if(strstr(a,"\"Personal_FullName\"") != NULL){
+        strcpy(name,"\"Personal_FullName\"");
         strcpy(tt,sv.Fullname);
-        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
-        ChenThongTin(tt,a,vi_tri);
     }
-    else if(strstr(a,"Personal_Department") != NULL){
-        strcpy(name,"Personal_Department");
+    else if(strstr(a,"\"Personal_Department\"") != NULL){
+        strcpy(name,"\"Personal_Department\"");
         strcpy(tt,sv.Faculty);
-        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
-        ChenThongTin(tt,a,vi_tri);
     }
     else if(strstr(a,"Personal_Phone") != NULL){
-        strcpy(name,"Personal_Phone");
-        strcpy(tt,"Email :");
-        strcat(tt,getPhone(sv.Fullname));
-        TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
-        ChenThongTin(tt,a,vi_tri);
+        strcpy(name,"\"Personal_Phone\"");
+        strcpy(tt,"\nEmail :");
+        strcat(tt,phone);
     }
     else if(strstr(a,"Description") != NULL){
-        strcpy(name,"Description");
-        strcpy(tt,sv.MoTa);
+        strcpy(name,"\"Description\"");
+        strcpy(tt,sv.ThongTinKhac);
+    }
+    else if(strstr(a,"Họ và tên:") != NULL){
+        strcpy(name,"Họ và tên:");
+        strcpy(tt,sv.Fullname);
+    }
+    else if(strstr(a,"MSSV:") != NULL){
+        strcpy(name,"MSSV:");
+        strcpy(tt,sv.MSSV);
+    }
+    else if(strstr(a,"Sinh viên khoa") != NULL){
+        strcpy(name,"Sinh viên khoa");
+        strcpy(tt,sv.Faculty);
+    }
+    else if(strstr(a,"Ngày sinh:") != NULL){
+        strcpy(name,"Ngày sinh:");
+        strcpy(tt,sv.DoB);
+    }
+    else if(strstr(a,"Sở thích") != NULL){
+        flag = true;
+        strcpy(tt,"<li>");
+        int j = strlen(tt);
+        int c = 0;
+        for(int i = 0; i < strlen(sv.ThongTinKhac); i++){
+            if(sv.ThongTinKhac[i] == '\"'){
+                if(c % 2 == 0){
+                    c++;
+                    sv.ThongTinKhac[i] = '1';
+                }
+                else{
+                    c++;
+                    sv.ThongTinKhac[i] = '2';
+                }
+            }
+            else if(sv.ThongTinKhac[i] == ','){
+                sv.ThongTinKhac[i] = '\n';
+            }
+
+        }
+        for(int i = 0; i < strlen(sv.ThongTinKhac); i++){
+            if(sv.ThongTinKhac[i] == '1'){
+                strcat(tt,"<li>");
+                j += strlen("<li>");
+            }
+            else if(sv.ThongTinKhac[i] == '2'){
+                strcat(tt,"</li>");
+                j += strlen("</li>");
+            }
+            else{
+                tt[j] = sv.ThongTinKhac[i];
+                j++;
+            }
+        }
+        tt[j] = '\0';
+    }
+    else{
+        flag = false;
+    }
+    if(flag == true){
         TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
         ChenThongTin(tt,a,vi_tri);
     }
     delete [] tt;
     delete [] name;
+    delete [] phone;
 }
 //Tao file (tam xong)
 void TaoFileHTML(SinhVien sv){
