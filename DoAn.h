@@ -3,30 +3,32 @@
 //#include "utf8.h"
 //#include "unicode/uchar.h"
 #ifndef _DOAN_H_
-#define _DOAN_H
+#define _DOAN_H_
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-#include<cstdlib>
 #include<sys/stat.h>
-#include<cstdio>
+//#include<direct.h>
+#include<errno.h>
 using namespace std;
 struct SinhVien{
     char MSSV[11];
-    char Fullname[31];
-    char Faculty[31];
+    char *Fullname;
+    char *Faculty;
     int Khoa;
     char DoB[11];
-    char img[50];
-    char MoTa[1001];
-    char ThongTinKhac[10][100];
+    char img[51];
+    char *MoTa;
+    char *ThongTinKhac;
 };
 int soDong();
-void TaoFileHTML(SinhVien sv);
+void printsv(SinhVien a);
+void TaoFileHTML(SinhVien sv, char* thu_muc);
 int GetLine(char* &t,long &seek);
-void writeHTML(SinhVien sv,char* &t,long &seek,int flag);
+void writeHTML(SinhVien sv,char* &t,long &seek,int flag, char* duong_dan);
 void xuatSinhVien(SinhVien A);
 void GetData(SinhVien* &sinh_vien,int& no);
+char *TaoThuMuc();
 #endif

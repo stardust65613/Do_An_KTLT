@@ -1,10 +1,13 @@
 #include"DoAn.h"
 int main(){
     SinhVien *sv = NULL;
+    char *thu_muc = TaoThuMuc();
     int so_sv;
-    cout << "Hello world";
     GetData(sv,so_sv);
-    TaoFileHTML(sv[0]);
+    for(int i = 0; i < so_sv; i++){
+        TaoFileHTML(sv[i],thu_muc);
+    }
+    delete [] thu_muc;
     delete [] sv;
     return 0;
 }
