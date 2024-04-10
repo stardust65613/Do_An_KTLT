@@ -6,6 +6,10 @@ int main(){
     GetData(sv,so_sv);
     for(int i = 0; i < so_sv; i++){
         TaoFileHTML(sv[i],thu_muc);
+        cout << "sucess\n";
+    }
+    for(int i = 0; i < so_sv; i++){
+        ThuHoiBoNho(sv[i]);
     }
     delete [] thu_muc;
     delete [] sv;

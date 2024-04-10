@@ -23,6 +23,7 @@ struct SinhVien{
     char *MoTa;
     char *ThongTinKhac;
 };
+void ThuHoiBoNho(SinhVien sv);
 int soDong();
 void printsv(SinhVien a);
 void TaoFileHTML(SinhVien sv, char* thu_muc);

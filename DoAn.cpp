@@ -17,13 +17,12 @@ int GetBin(char c){
        return 1;
    }
 }
-int DoDaiChuoiUnicode(char *a){
-    int n = 0;
-    return n;
-}
-void CapPhat(char* du_lieu, char* &chuoi_can_cap_phat){
-    int n = DoDaiChuoiUnicode(du_lieu);
-    chuoi_can_cap_phat = new char[n];
+char* CapPhat(char* du_lieu){
+    int n = strlen(du_lieu);
+    char *chuoi_can_cap_phat = new char[n];
+    strcpy(chuoi_can_cap_phat,du_lieu);
+    cout << chuoi_can_cap_phat;
+    return chuoi_can_cap_phat;
 }
 void ThuHoiBoNho(SinhVien sv){
     delete [] sv.Fullname;
@@ -41,11 +40,8 @@ void LuuSinhVien(SinhVien &sv, char* data){
     bool flag;
     int cnt = 0;
     int index;
-    char str[10];
-    char *img = new char[500];
-    getcwd(img,500*sizeof(char));
-    cout << img;
-    strcat(img,"\\Images\\");
+    char *temp = new char[500];
+    strcpy(temp,"\0");
     for(int i = 0; i < strlen(data); i++){
         flag = false;
         if(data[i] == ',' && cnt < 8){
@@ -57,16 +53,18 @@ void LuuSinhVien(SinhVien &sv, char* data){
             index = i + 2;
         }
         else if(cnt == 2 && flag == true){
-            CatChuoi(data,sv.Fullname,index,i - 2);
+            CatChuoi(data,temp,index,i - 2);
+            sv.Fullname = CapPhat(temp);
             index = i + 2;
         }
         else if(cnt == 3 && flag == true){
-            CatChuoi(data,sv.Faculty,index,i - 2);
+            CatChuoi(data,temp,index,i - 2);
+            sv.Faculty = CapPhat(temp);
             index = i + 2;
         }
         else if(cnt == 4 && flag == true){
-            CatChuoi(data,str,index,i - 2);
-            sv.Khoa = stoi(str);
+            CatChuoi(data,temp,index,i - 2);
+            sv.Khoa = stoi(temp);
             index = i + 2;
         }
         else if(cnt == 5 && flag == true){
@@ -75,14 +73,20 @@ void LuuSinhVien(SinhVien &sv, char* data){
         }
         else if(cnt == 6 && flag == true){
             CatChuoi(data,sv.img,index,i - 2);
+            getcwd(temp,500*sizeof(char));
+            strcat(temp,"\\Images\\");
+            strcat(temp,sv.img);
+            strcpy(sv.img,temp);
             index = i + 2;
         }
         else if(cnt == 7 && flag == true){
-            CatChuoi(data,sv.MoTa,index,i - 2);
+            CatChuoi(data,temp,index,i - 2);
+            sv.MoTa = CapPhat(temp);
             index = i + 2;
         }
         else if(cnt == 6 && i == strlen(data) - 1){
-            CatChuoi(data,sv.MoTa,index,i - 1);
+            CatChuoi(data,temp,index,i - 1);
+            sv.MoTa = CapPhat(temp);
             index = i + 2;
         }
         if(i == strlen(data) -  1 && cnt == 7){
@@ -90,14 +94,14 @@ void LuuSinhVien(SinhVien &sv, char* data){
         }
     }
     if(index < strlen(data) && cnt == 8){
-        CatChuoi(data,sv.ThongTinKhac,index - 1,strlen(data) - 1);
+        CatChuoi(data,temp,index - 1,strlen(data) - 1);
+        sv.ThongTinKhac = CapPhat(temp);
     }
     else{
+        sv.ThongTinKhac = new char[1];
         sv.ThongTinKhac[0] = '\0';
     }
-    strcat(img,sv.img);
-    strcpy(sv.img,img);
-    delete [] img;
+    delete [] temp;
 }
 int soDong(){
     int num = 0;
@@ -308,7 +312,7 @@ void KiemTraVaThemThongTin(SinhVien sv, char *a,bool &f){
         strcpy(tt,cpr);
         TimViTriThemThongTin(a,name,vi_tri,vi_tri2);
         int d1 = vi_tri - a;
-        int d2 = vi_tri2 - a;
+        int d2 = vi_tri - a + strlen("MSSV - Tên sinh viên thực hiện");
         if(d2 - d1 > strlen("23120027 - Nguyễn Hải Đăng")){
             for(int i = d1 ; i <= d2; i++){
                 a[i] = cpr[i - d1];
@@ -325,6 +329,7 @@ void KiemTraVaThemThongTin(SinhVien sv, char *a,bool &f){
                 a[i] = cpr[i - d1];
             }
         }
+        cout << a;
     }
     else if(strstr(a,"\"TextInList\"") != NULL && f == true){
         if(sv.ThongTinKhac[0] != '\0'){
