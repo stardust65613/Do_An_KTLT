@@ -28,7 +28,6 @@ void ThuHoiBoNho(SinhVien sv){
     delete [] sv.Fullname;
     delete [] sv.Faculty;
     delete [] sv.MoTa;
-    delete [] sv.ThongTinKhac;
 }
 void CatChuoi(char *a, char *b, int pos1, int pos2){
     for(int i = pos1; i <= pos2; i++){
@@ -142,11 +141,11 @@ void GetData(SinhVien* &sinh_vien,int& no){
     fclose(p);
 }
 
-int GetLine(char* &t,long &seek){
+int GetLine(char* &t,long &seek, char* file_name){
     FILE* p = NULL;
     int flag = -1;
     t = new char[500];
-    p = fopen("template.html","r");
+    p = fopen(file_name,"r");
     fseek(p,seek,SEEK_SET);
     fgets(t,500,p);
     seek = ftell(p);
@@ -156,7 +155,7 @@ int GetLine(char* &t,long &seek){
     fclose(p);
     return flag;
 }
-void writeHTML(SinhVien sv,char* &t, long &seek,int flag,char* duong_dan){
+void writeFile(char* &t, long &seek,char* duong_dan){
     FILE* p = NULL;
     p = fopen(duong_dan,"a");
     fseek(p,seek,SEEK_SET);
@@ -329,7 +328,6 @@ void KiemTraVaThemThongTin(SinhVien sv, char *a,bool &f){
                 a[i] = cpr[i - d1];
             }
         }
-        cout << a;
     }
     else if(strstr(a,"\"TextInList\"") != NULL && f == true){
         if(sv.ThongTinKhac[0] != '\0'){
@@ -391,6 +389,26 @@ void KiemTraVaThemThongTin(SinhVien sv, char *a,bool &f){
     phone = NULL;
 }
 //Tao file (tam xong)
+void TaoFileCSS(char *thu_muc){
+    char *buffer = NULL;
+    int temp = 1;
+    long seek = 0;
+    long seek2 = 0;
+    char *duong_dan = new char[500];
+    strcpy(duong_dan,thu_muc);
+    strcat(duong_dan,"/personal.css");
+    char file_name[13] = "personal.css";
+    FILE * p = NULL;
+    p = fopen(duong_dan,"w");
+    if(p != NULL){
+        fputs("\0",p);
+    }
+    while(temp > 0){
+        temp = GetLine(buffer,seek,file_name);
+        writeFile(buffer,seek2,duong_dan);    
+    }
+    delete [] duong_dan;
+}
 void TaoFileHTML(SinhVien sv, char *thu_muc){
     char *buffer = NULL;
     int temp = 1;
@@ -398,6 +416,7 @@ void TaoFileHTML(SinhVien sv, char *thu_muc){
     bool flag = false;
     long seek2 = 0;
     char *duong_dan = new char[500];
+    char file_name[14] = "template.html";
     strcpy(duong_dan,thu_muc);
     strcat(duong_dan,"/");
     strcat(duong_dan,sv.MSSV);
@@ -408,12 +427,9 @@ void TaoFileHTML(SinhVien sv, char *thu_muc){
         fputs("\0",p);
     }
     while(temp > 0){
-        temp = GetLine(buffer,seek);
-        if(temp < 0){
-            break;
-        }
+        temp = GetLine(buffer,seek,file_name);
         KiemTraVaThemThongTin(sv,buffer,flag);
-        writeHTML(sv,buffer,seek2,temp,duong_dan);    
+        writeFile(buffer,seek2,duong_dan);    
     }
     delete [] duong_dan;
 }
