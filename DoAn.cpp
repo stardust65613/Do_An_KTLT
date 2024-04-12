@@ -21,7 +21,6 @@ char* CapPhat(char* du_lieu){
     int n = strlen(du_lieu);
     char *chuoi_can_cap_phat = new char[n];
     strcpy(chuoi_can_cap_phat,du_lieu);
-    cout << chuoi_can_cap_phat;
     return chuoi_can_cap_phat;
 }
 void ThuHoiBoNho(SinhVien sv){
@@ -160,6 +159,7 @@ void writeFile(char* &t, long &seek,char* duong_dan){
     p = fopen(duong_dan,"a");
     fseek(p,seek,SEEK_SET);
     fputs(t,p);
+    cout << t;
     seek = ftell(p);
     fclose(p);
     delete [] t;
