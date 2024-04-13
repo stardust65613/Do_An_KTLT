@@ -118,14 +118,13 @@ int soDong(){
     delete [] a;
     return num;
 }
-void GetData(SinhVien* &sinh_vien,int& no){
+void GetData(SinhVien* &sinh_vien){
     int n = 0;
     char str[500];
     FILE* p = NULL;
     p = fopen("SinhVien.csv","r");
-    no = soDong();
     SinhVien *ptr = NULL;
-    ptr = new SinhVien[no];
+    ptr = new SinhVien;
     sinh_vien = ptr;
     if(p == NULL){
         cout << "\nKhong mo duoc tep.";
@@ -157,11 +156,15 @@ int GetLine(char* &t,long &seek, char* file_name){
 void writeFile(char* &t, long &seek,char* duong_dan){
     FILE* p = NULL;
     p = fopen(duong_dan,"a");
-    fseek(p,seek,SEEK_SET);
-    fputs(t,p);
-    cout << t;
-    seek = ftell(p);
-    fclose(p);
+    if(p != NULL){
+        fseek(p,seek,SEEK_SET);
+        fputs(t,p);
+        seek = ftell(p);
+        fclose(p);
+    }
+    else{
+        cout << "khong the ghi file";
+    }
     delete [] t;
     t = NULL;
 }
