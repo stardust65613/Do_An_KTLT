@@ -4,6 +4,7 @@ int main(){
     char *thu_muc = TaoThuMuc();
     int so_sv;
     GetData(sv,so_sv);
+    cout << so_sv;
     for(int i = 0; i < so_sv; i++){
         TaoFileHTML(sv[i],thu_muc);
     }
