@@ -2,15 +2,17 @@
 int main(){
     SinhVien *sv = NULL;
     char *thu_muc = TaoThuMuc();
-    int so_sv = soDong();
+    int so_sv;
+    GetData(sv,so_sv);
     cout << so_sv;
     for(int i = 0; i < so_sv; i++){
-        GetData(sv);
-        TaoFileHTML(*sv,thu_muc);
-        ThuHoiBoNho(*sv);
-        delete sv;
+        TaoFileHTML(sv[i],thu_muc);
+    }
+    for(int i = 0; i < so_sv; i++){
+        ThuHoiBoNho(sv[i]);
     }
     TaoFileCSS(thu_muc);
     delete [] thu_muc;
+    delete [] sv;
     return 0;
 }

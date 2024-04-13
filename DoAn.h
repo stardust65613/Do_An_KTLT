@@ -30,7 +30,7 @@ void TaoFileHTML(SinhVien sv, char* thu_muc);
 int GetLine(char* &t,long &seek, char* file_name);
 void writeHTML(char* &t,long &seek,int flag, char* duong_dan);
 void xuatSinhVien(SinhVien A);
-void GetData(SinhVien* &sinh_vien);
+void GetData(SinhVien* &sinh_vien,int& no);
 char *TaoThuMuc();
 void TaoFileCSS(char *thu_muc);
 #endif
