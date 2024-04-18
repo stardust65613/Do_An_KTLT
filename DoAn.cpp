@@ -88,6 +88,7 @@ bool KiemTraDuLieu(char *a,int limit){
 }
 int LuuSinhVien(SinhVien &sv, char* data){
     bool flag;
+    int k = 0;
     int cnt = 0;
     int cnt2 = 0;
     int index;
@@ -159,21 +160,26 @@ int LuuSinhVien(SinhVien &sv, char* data){
             cnt = 8;
             index = i + 3;
         }
+        if(KiemTraDuLieu(temp,limit) != 0){
+            k = -1;
+        }
+    }
     }
     if(index < strlen(data) && cnt == 8){
         CatChuoi(data,temp,index - 1,strlen(data) + 1);
         limit = 1000;
+        if(KiemTraDuLieu(temp,limit) != 0){
+            k = -1;
+        }
         sv.ThongTinKhac = CapPhat(temp);
     }
     else{
         sv.ThongTinKhac = new char[2];
         sv.ThongTinKhac[0] = '\0';
     }
-    if(KiemTraDuLieu(temp,limit) != 0){
-        return -1;
-    }
+    
     delete [] temp;
-    return 0;
+    return k;
 }
 int soDong(){
     int num = 0;
