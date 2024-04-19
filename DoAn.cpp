@@ -17,6 +17,17 @@ int GetNum(char c){
        return 1;
    }
 }
+int DoDaiChuoiUnicode(char *a){
+    int n = 0;
+    int length = 0;
+    int temp =  0;
+    while(n < strlen(a)){
+        temp = GetNum(a[n]);
+        n += temp;
+        length++;
+    }
+    return length;
+}
 void GetChar(int len,int pos,char * a,char *b){
     for(int i = 0; i < len; i++){
         a[i] = b[pos + i];
@@ -58,6 +69,7 @@ void ThuHoiBoNho(SinhVien sv){
     delete [] sv.Fullname;
     delete [] sv.Faculty;
     delete [] sv.MoTa;
+    delete [] sv.ThongTinKhac;
 }
 void CatChuoi(char *a, char *b, int pos1, int pos2){
     for(int i = pos1; i <= pos2; i++){
@@ -65,11 +77,22 @@ void CatChuoi(char *a, char *b, int pos1, int pos2){
     }
     b[pos2 + 1 - pos1] = '\0';
 }
-void LuuSinhVien(SinhVien &sv, char* data){
+bool KiemTraDuLieu(char *a,int limit){
+    if(DoDaiChuoiUnicode(a) <= limit){
+        return true;
+    }
+    else{
+        cout << "\nSo ki tu cua du lieu " << a << " la " << strlen(a) << " vuot qua so ki tu cho phep.\nSo ki tu cho phep:"<< limit;
+        return false;
+    }
+}
+int LuuSinhVien(SinhVien &sv, char* data){
     bool flag;
+    int k = 0;
     int cnt = 0;
     int cnt2 = 0;
     int index;
+    int limit;
     char *temp = new char[500];
     strcpy(temp,"\0");
     for(int i = 0; i < strlen(data); i++){
@@ -82,16 +105,20 @@ void LuuSinhVien(SinhVien &sv, char* data){
             }
         }
         if(cnt == 1 && flag == true){
-            CatChuoi(data,sv.MSSV,1,i - 1);
+            CatChuoi(data,temp,1,i - 1);
             index = i + 3;
+            limit = 10;
+            CatChuoi(data,sv.MSSV,1,i - 1);
         }
         else if(cnt == 2 && flag == true){
             CatChuoi(data,temp,index,i - 1);
+            limit = 30;
             sv.Fullname = CapPhat(temp);
             index = i + 3;
         }
         else if(cnt == 3 && flag == true){
             CatChuoi(data,temp,index,i - 1);
+            limit = 30;
             sv.Faculty = CapPhat(temp);
             index = i + 3;
         }
@@ -101,6 +128,8 @@ void LuuSinhVien(SinhVien &sv, char* data){
             index = i + 3;
         }
         else if(cnt == 5 && flag == true){
+            CatChuoi(data,temp,index,i - 1);
+            limit = 10;
             CatChuoi(data,sv.DoB,index,i - 1);
             index = i + 3;
         }
@@ -109,16 +138,21 @@ void LuuSinhVien(SinhVien &sv, char* data){
             getcwd(temp,500*sizeof(char));
             strcat(temp,"\\Images\\");
             strcat(temp,sv.img);
+            limit = 50;
             strcpy(sv.img,temp);
+            
             index = i + 3;
         }
         else if(cnt == 7 && flag == true){
             CatChuoi(data,temp,index,i - 1);
+            limit = 1000;
             sv.MoTa = CapPhat(temp);
+            
             index = i + 3;
         }
         else if(cnt == 6 && i == strlen(data) - 1){
             CatChuoi(data,temp,index,i);
+            limit = 1000;
             sv.MoTa = CapPhat(temp);
             index = i + 3;
         }
@@ -126,16 +160,25 @@ void LuuSinhVien(SinhVien &sv, char* data){
             cnt = 8;
             index = i + 3;
         }
+        if(flag == true && KiemTraDuLieu(temp,limit) == false){
+            k = -1;
+        }
     }
     if(index < strlen(data) && cnt == 8){
         CatChuoi(data,temp,index - 1,strlen(data) + 1);
+        limit = 1000;
+        if(KiemTraDuLieu(temp,limit) == false){
+            k = -1;
+        }
         sv.ThongTinKhac = CapPhat(temp);
     }
     else{
-        sv.ThongTinKhac = new char[1];
+        sv.ThongTinKhac = new char[2];
         sv.ThongTinKhac[0] = '\0';
     }
+    
     delete [] temp;
+    return k;
 }
 int soDong(){
     int num = 0;
@@ -154,8 +197,9 @@ int soDong(){
     delete [] a;
     return num;
 }
-void GetData(SinhVien* &sinh_vien,int& no){
+int GetData(SinhVien* &sinh_vien,int& no){
     int n = 0;
+    int flag = 0;
     char str[500];
     FILE* p = NULL;
     p = fopen("SinhVien.csv","r");
@@ -169,11 +213,15 @@ void GetData(SinhVien* &sinh_vien,int& no){
     else{
         while(!feof(p)){
             fgets(str,500,p);
-            LuuSinhVien(sinh_vien[n],str);
+            flag = LuuSinhVien(sinh_vien[n],str);
             n++;
+            if(flag != 0){
+                return n;
+            }
         }
     }
     fclose(p);
+    return 0;
 }
 
 int GetLine(char* &t,long &seek, char* file_name){

@@ -1,7 +1,3 @@
-//#include "unicode/utypes.h"
-//#include "unicode/stringpiece.h"
-//#include "utf8.h"
-//#include "unicode/uchar.h"
 #ifndef _DOAN_H_
 #define _DOAN_H_
 #include<iostream>
@@ -10,7 +6,6 @@
 #include<stdlib.h>
 #include<math.h>
 #include<sys/stat.h>
-//#include<direct.h>
 #include<errno.h>
 using namespace std;
 struct SinhVien{
@@ -30,7 +25,7 @@ void TaoFileHTML(SinhVien sv, char* thu_muc);
 int GetLine(char* &t,long &seek, char* file_name);
 void writeHTML(char* &t,long &seek,int flag, char* duong_dan);
 void xuatSinhVien(SinhVien A);
-void GetData(SinhVien* &sinh_vien,int& no);
+int GetData(SinhVien* &sinh_vien,int& no);
 char *TaoThuMuc();
 void TaoFileCSS(char *thu_muc);
 #endif
