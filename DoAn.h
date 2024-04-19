@@ -1,7 +1,3 @@
-//#include "unicode/utypes.h"
-//#include "unicode/stringpiece.h"
-//#include "utf8.h"
-//#include "unicode/uchar.h"
 #ifndef _DOAN_H_
 #define _DOAN_H_
 #include<iostream>
@@ -10,7 +6,6 @@
 #include<stdlib.h>
 #include<math.h>
 #include<sys/stat.h>
-//#include<direct.h>
 #include<errno.h>
 using namespace std;
 struct SinhVien{

@@ -10,6 +10,9 @@ int main(){
         }
         TaoFileCSS(thu_muc);
     }
+    else{
+        so_sv = flag;
+    }
     for(int i = 0; i < so_sv; i++){
        ThuHoiBoNho(sv[i]);
     }

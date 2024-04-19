@@ -160,15 +160,14 @@ int LuuSinhVien(SinhVien &sv, char* data){
             cnt = 8;
             index = i + 3;
         }
-        if(KiemTraDuLieu(temp,limit) != 0){
+        if(flag == true && KiemTraDuLieu(temp,limit) == false){
             k = -1;
         }
-    }
     }
     if(index < strlen(data) && cnt == 8){
         CatChuoi(data,temp,index - 1,strlen(data) + 1);
         limit = 1000;
-        if(KiemTraDuLieu(temp,limit) != 0){
+        if(KiemTraDuLieu(temp,limit) == false){
             k = -1;
         }
         sv.ThongTinKhac = CapPhat(temp);
@@ -215,10 +214,10 @@ int GetData(SinhVien* &sinh_vien,int& no){
         while(!feof(p)){
             fgets(str,500,p);
             flag = LuuSinhVien(sinh_vien[n],str);
-            if(flag != 0){
-                return flag;
-            }
             n++;
+            if(flag != 0){
+                return n;
+            }
         }
     }
     fclose(p);
